@@ -3,24 +3,24 @@ Protected Module support_numerical_methods_tests
 	#tag Method, Flags = &h0
 		Function check_matrix(msg as string, calculated(, ) as double, expected(, ) as double) As Boolean
 		  
-		  var ccRowindex as integer = calculated.LastIndex(1)
+		  var ccRowIndex as integer = calculated.LastIndex(1)
 		  var ccColIndex as integer = calculated.LastIndex(2)
 		  
-		  var exRowindex as integer = expected.LastIndex(1)
+		  var exRowIndex as integer = expected.LastIndex(1)
 		  var exColIndex as integer = expected.LastIndex(2)
 		  
 		  System.DebugLog("Start checking " + msg)
 		  
 		  if not MatSameSize(calculated, expected) then
 		    
-		    System.DebugLog(msg + " array size(" + str(ccRowindex) + "," + str(ccColIndex)+ ") not matching expected size (" + str(exRowindex) + "," + str(exColIndex)+ ")")
+		    System.DebugLog(msg + " array size(" + str(ccRowIndex) + "," + str(ccColIndex)+ ") not matching expected size (" + str(exRowIndex) + "," + str(exColIndex)+ ")")
 		    return false
 		    
 		  end if
 		  
 		  var b as Boolean = true
 		  
-		  for r as integer = 0 to ccRowindex
+		  for r as integer = 0 to ccRowIndex
 		    for c as integer = 0 to ccColIndex
 		      if abs(calculated(r,c) - expected(r,c)) < 0.001 then 
 		        

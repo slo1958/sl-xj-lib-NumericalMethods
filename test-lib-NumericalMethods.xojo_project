@@ -12,6 +12,7 @@ DesktopWindow=wnd_math;wnd_math.xojo_window;&h000000004EB9A7FF;&h000000000000000
 Folder=lib-numerical-methods-tests;lib-numerical-methods-tests;&h000000005F43DFFF;&h0000000000000000;false
 Module=support_numerical_methods_tests;lib-numerical-methods-tests/support_numerical_methods_tests.xojo_code;&h0000000024D2B7FF;&h000000005F43DFFF;false
 Module=NumericalMethodsMatrix;lib-numerical-methods/NumericalMethodsMatrix.xojo_code;&h00000000249EC7FF;&h000000007619CFFF;false
+Module=NumericalMethodsMatrixGeometry;lib-numerical-methods/NumericalMethodsMatrixGeometry.xojo_code;&h00000000431797FF;&h000000007619CFFF;false
 DefaultWindow=wnd_math
 AppMenuBar=MainMenuBar
 MajorVersion=1
