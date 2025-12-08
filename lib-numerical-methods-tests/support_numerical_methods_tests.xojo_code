@@ -1,53 +1,6 @@
 #tag Module
 Protected Module support_numerical_methods_tests
 	#tag Method, Flags = &h0
-		Function check_matrix(msg as string, calculated(, ) as double, expected(, ) as double) As Boolean
-		  
-		  var ccRowIndex as integer = calculated.LastIndex(1)
-		  var ccColIndex as integer = calculated.LastIndex(2)
-		  
-		  var exRowIndex as integer = expected.LastIndex(1)
-		  var exColIndex as integer = expected.LastIndex(2)
-		  
-		  System.DebugLog("Start checking " + msg)
-		  
-		  if not MatSameSize(calculated, expected) then
-		    
-		    System.DebugLog(msg + " array size(" + str(ccRowIndex) + "," + str(ccColIndex)+ ") not matching expected size (" + str(exRowIndex) + "," + str(exColIndex)+ ")")
-		    return false
-		    
-		  end if
-		  
-		  var b as Boolean = true
-		  
-		  for r as integer = 0 to ccRowIndex
-		    for c as integer = 0 to ccColIndex
-		      if abs(calculated(r,c) - expected(r,c)) < 0.001 then 
-		        
-		        
-		      else
-		        System.DebugLog("Calculated value at (" + str(r) + "," + str(c)+ ")  "  _
-		        + calculated(r,c).ToString _
-		        + " not matching expected value " _
-		        + expected(r,c).ToString)
-		        
-		        b = false
-		        
-		        
-		      end if
-		      
-		    next
-		  next
-		  
-		  System.DebugLog("Done checking " + msg)
-		  
-		  
-		  return b
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub testLU()
 		  var a(2,2) as Double
 		  var idx(-1) as integer
@@ -68,7 +21,7 @@ Protected Module support_numerical_methods_tests
 		  var acopy(-1,-1) as Double = MatCopy(a)
 		  
 		  MatDebugLog(a)
-		  MatDebugLog(mat(b))
+		  MatDebugLog(b)
 		  
 		  var k1 as integer=  LUDecomposition(a, idx)
 		  
@@ -167,7 +120,7 @@ Protected Module support_numerical_methods_tests
 		  var abxexpected() as Double = array(1000.0, 1820.0, 1180.0, 2180.0)
 		  
 		  call check_matrix("Matrix x matrix " , ab, abexpected)
-		  call check_matrix("Matrix x vector " , mat(abx), mat(abxexpected))
+		  call check_matrix("Matrix x vector " , columnMat(abx), columnMat(abxexpected))
 		  
 		  
 		  Return

@@ -24,6 +24,7 @@ Protected Module NumericalMethodsMatrix
 	#tag Method, Flags = &h0
 		Function DotProduct(a() as double, b() as double) As double
 		  
+		  
 		  var r as double = 0
 		  
 		  if  a.LastIndex(1) <>  b.LastIndex(1) then return r
@@ -60,84 +61,6 @@ Protected Module NumericalMethodsMatrix
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function MatCopy(a(, ) as Double) As double(,)
-		  var r(-1,-1) as Double
-		  
-		  r.ResizeTo(a.LastIndex(1), a.LastIndex(2))
-		  
-		  for i as integer = 0 to a.LastIndex(1)
-		    for j as integer =0 to a.LastIndex(2)
-		      r(i,j) = a(i,j)
-		    next
-		    
-		  next
-		  
-		  return r
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function MatCopy(a() as Double) As double()
-		  
-		  var r(-1) as Double
-		  
-		  r.ResizeTo(a.LastIndex)
-		  
-		  for i as integer = 0 to a.LastIndex
-		    r(i) = a(i)
-		    
-		  next
-		  
-		  return r
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub MatDebugLog(a(, ) as Double, dblFormat as string = "-#####.000")
-		  
-		  System.DebugLog("Dump matrix (" + a.LastIndex(1).ToString + "," + a.LastIndex(2).ToString+")")
-		  
-		  for i as integer = 0 to a.LastIndex(1)
-		    var s as string
-		    s = "Row " + Format(i, "000") + ":"
-		    for j as integer = 0 to a.LastIndex(2)
-		      s = s + Format(a(i,j), dblFormat) + " " 
-		    next
-		    
-		    System.DebugLog(s)
-		    
-		  next
-		  
-		  System.DebugLog(" ")
-		  
-		  return
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub MatDebugLog(a() as Double, dblFormat as string = "-#####.000")
-		  
-		  System.DebugLog("Dump matrix (" + a.LastIndex(1).ToString  +")")
-		  
-		  for i as integer = 0 to a.LastIndex(1)
-		    var s as string
-		    s = "Row " + Format(i, "000") + ":"+ Format(a(i), dblFormat)
-		    
-		    System.DebugLog(s)
-		    
-		  next
-		  
-		  System.DebugLog(" ")
-		  
-		  return
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub MatIdentity(a(, ) as double)
 		  var aRowIndex as integer = a.LastIndex(1)
 		  var aColIndex as integer = a.LastIndex(2)
@@ -153,17 +76,6 @@ Protected Module NumericalMethodsMatrix
 		  next
 		  
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function MatIsSquare(a(, ) as Double) As Boolean
-		  //
-		  // Returns true if the matrix is squared
-		  //
-		  
-		  return a.LastIndex(1) = a.LastIndex(2)
-		  
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -355,15 +267,6 @@ Protected Module NumericalMethodsMatrix
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function MatSameSize(a(, ) as double, b(, ) as double) As Boolean
-		  
-		  return a.LastIndex(1) = b.LastIndex(1) and a.LastIndex(2) = b.LastIndex(2)
-		  
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function OuterProduct(a() as double, b() as double) As double(,)
 		  //
 		  // Calculates the outer product of vector a(m) x vector b(n)
@@ -389,30 +292,6 @@ Protected Module NumericalMethodsMatrix
 		  
 		  
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub SetArrayRow(a(, ) as double, rowindex as integer, r() as double)
-		  //
-		  // Add a row and adjust size
-		  //
-		  
-		  var newRowSize as integer = a.LastIndex(1)
-		  var newColSize as integer = a.LastIndex(2)
-		  
-		  if newRowSize < RowIndex then newRowSize = RowIndex
-		  if newColSize < r.LastIndex then newColSize = r.LastIndex
-		  
-		  a.ResizeTo(newRowSize, newColSize)
-		  
-		  for i as integer = 0 to r.LastIndex
-		    a(RowIndex, i) = r(i)
-		    
-		  next
-		  
-		  return
-		  
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

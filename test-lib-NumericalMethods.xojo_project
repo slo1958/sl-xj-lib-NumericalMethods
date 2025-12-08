@@ -14,6 +14,7 @@ Module=support_numerical_methods_tests;lib-numerical-methods-tests/support_numer
 Module=NumericalMethodsMatrix;lib-numerical-methods/NumericalMethodsMatrix.xojo_code;&h00000000249EC7FF;&h000000007619CFFF;false
 Module=NumericalMethodsMatrixGeometry;lib-numerical-methods/NumericalMethodsMatrixGeometry.xojo_code;&h00000000431797FF;&h000000007619CFFF;false
 Module=NumericalMethodMatrixLUDecomposition;lib-numerical-methods/NumericalMethodMatrixLUDecomposition.xojo_code;&h0000000079219FFF;&h000000007619CFFF;false
+Module=NumericalMethodMatrixHelpers;lib-numerical-methods/NumericalMethodMatrixHelpers.xojo_code;&h00000000009747FF;&h000000007619CFFF;false
 DefaultWindow=wnd_math
 AppMenuBar=MainMenuBar
 MajorVersion=1
