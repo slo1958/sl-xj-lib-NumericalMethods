@@ -30,17 +30,11 @@ Protected Module NumericalMethodsMatrix
 		  
 		  for i as integer = 0 to a.LastIndex(1)
 		    r = r + a(i) * b(i) 
-		     
+		    
 		  next
 		  
 		  return r
 		  
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function m(a() as double) As double(,)
 		  
 		End Function
 	#tag EndMethod
@@ -66,6 +60,84 @@ Protected Module NumericalMethodsMatrix
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function MatCopy(a(, ) as Double) As double(,)
+		  var r(-1,-1) as Double
+		  
+		  r.ResizeTo(a.LastIndex(1), a.LastIndex(2))
+		  
+		  for i as integer = 0 to a.LastIndex(1)
+		    for j as integer =0 to a.LastIndex(2)
+		      r(i,j) = a(i,j)
+		    next
+		    
+		  next
+		  
+		  return r
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function MatCopy(a() as Double) As double()
+		  
+		  var r(-1) as Double
+		  
+		  r.ResizeTo(a.LastIndex)
+		  
+		  for i as integer = 0 to a.LastIndex
+		    r(i) = a(i)
+		    
+		  next
+		  
+		  return r
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub MatDebugLog(a(, ) as Double, dblFormat as string = "-#####.000")
+		  
+		  System.DebugLog("Dump matrix (" + a.LastIndex(1).ToString + "," + a.LastIndex(2).ToString+")")
+		  
+		  for i as integer = 0 to a.LastIndex(1)
+		    var s as string
+		    s = "Row " + Format(i, "000") + ":"
+		    for j as integer = 0 to a.LastIndex(2)
+		      s = s + Format(a(i,j), dblFormat) + " " 
+		    next
+		    
+		    System.DebugLog(s)
+		    
+		  next
+		  
+		  System.DebugLog(" ")
+		  
+		  return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub MatDebugLog(a() as Double, dblFormat as string = "-#####.000")
+		  
+		  System.DebugLog("Dump matrix (" + a.LastIndex(1).ToString  +")")
+		  
+		  for i as integer = 0 to a.LastIndex(1)
+		    var s as string
+		    s = "Row " + Format(i, "000") + ":"+ Format(a(i), dblFormat)
+		    
+		    System.DebugLog(s)
+		    
+		  next
+		  
+		  System.DebugLog(" ")
+		  
+		  return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub MatIdentity(a(, ) as double)
 		  var aRowIndex as integer = a.LastIndex(1)
 		  var aColIndex as integer = a.LastIndex(2)
@@ -81,6 +153,17 @@ Protected Module NumericalMethodsMatrix
 		  next
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function MatIsSquare(a(, ) as Double) As Boolean
+		  //
+		  // Returns true if the matrix is squared
+		  //
+		  
+		  return a.LastIndex(1) = a.LastIndex(2)
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -133,7 +216,7 @@ Protected Module NumericalMethodsMatrix
 		  // 
 		  // returns a vector(m)
 		  //
-		   
+		  
 		  var r(-1) as double
 		  
 		  var aRowIndex as integer = a.LastIndex(1)
@@ -206,14 +289,14 @@ Protected Module NumericalMethodsMatrix
 		  var r(-1) as double
 		  
 		  var xIndex as integer = x.LastIndex(1)
-		   
+		  
 		  var aRowIndex as integer = a.LastIndex(1)
 		  var aColIndex as integer = a.LastIndex(2)
 		  
 		  if (xIndex <> aRowIndex) then return r
 		  
 		  r.ResizeTo(aColIndex)
-		   
+		  
 		  for outputIndex as integer = 0 to aColIndex 
 		    var s as double =  x(0) * a(0, outputIndex)  
 		    
@@ -224,7 +307,7 @@ Protected Module NumericalMethodsMatrix
 		    
 		    r(outputIndex) = s
 		    
-		     
+		    
 		  next
 		  
 		  return r
@@ -257,7 +340,7 @@ Protected Module NumericalMethodsMatrix
 		  var r(-1) as double
 		  
 		  var aIndex as integer = a.LastIndex(1)
-		   
+		  
 		  r.ResizeTo(aIndex)
 		  
 		  for i as integer = 0 to aIndex
@@ -293,7 +376,7 @@ Protected Module NumericalMethodsMatrix
 		  var rowIndex as integer = a.LastIndex
 		  var colindex as integer = b.LastIndex
 		  
-		  r.resize(rowIndex, colindex)
+		  r.ResizeTo(rowIndex, colindex)
 		  
 		  for i as integer = 0 to rowIndex
 		    for j as integer = 0 to colindex

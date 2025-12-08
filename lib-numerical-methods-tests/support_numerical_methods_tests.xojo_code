@@ -48,6 +48,39 @@ Protected Module support_numerical_methods_tests
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub testLU()
+		  var a(2,2) as Double
+		  var idx(-1) as integer
+		  var b(2) as double
+		  var x(-1) as double
+		  
+		  //
+		  // Example taken from 
+		  // Numerical Methods in Physics (515.421) by Prof Heinrich Sormann
+		  // English version
+		  //
+		  
+		  SetArrayRow(a, 0, array(1.0, 5923181.0, 1608.0))
+		  SetArrayRow(a, 1, array(5923181.0, 337116.0, -7.0))
+		  SetArrayRow(a, 2, array(6114.0, 2.0, 9101372.0))
+		  
+		  b = array(5924790.0, 6260290.0, 9107488.0) 
+		  var acopy(-1,-1) as Double = MatCopy(a)
+		  
+		  MatDebugLog(a)
+		  MatDebugLog(mat(b))
+		  
+		  var k1 as integer=  LUDecomposition(a, idx)
+		  
+		  var k2 as integer=  LUBackSubstitution(a, idx, b, x)
+		  
+		  MatDebugLog(x)
+		  
+		  return
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub TestMatAdd()
 		  
 		  var a(3,2) as Double
@@ -163,6 +196,12 @@ Protected Module support_numerical_methods_tests
 		  if abs(i - expected_i) > 0.001 then System.DebugLog("Error in intercept")
 		  
 		  return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Untitled()
 		  
 		End Sub
 	#tag EndMethod

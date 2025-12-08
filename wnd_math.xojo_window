@@ -56,6 +56,37 @@ Begin DesktopWindow wnd_math
       Visible         =   True
       Width           =   80
    End
+   Begin DesktopButton Button1
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "LUDecomposition"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   52
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   1
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   95
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndDesktopWindow
 
@@ -75,6 +106,13 @@ End
 		  TestMatIdentifty
 		  
 		  return
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Button1
+	#tag Event
+		Sub Pressed()
+		  testLU
 		End Sub
 	#tag EndEvent
 #tag EndEvents
