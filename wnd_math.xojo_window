@@ -87,6 +87,37 @@ Begin DesktopWindow wnd_math
       Visible         =   True
       Width           =   80
    End
+   Begin DesktopButton Button6
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Button"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   60
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   2
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   168
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   80
+   End
 End
 #tag EndDesktopWindow
 
@@ -113,6 +144,13 @@ End
 	#tag Event
 		Sub Pressed()
 		  testLU
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Button6
+	#tag Event
+		Sub Pressed()
+		  test_simplex
 		End Sub
 	#tag EndEvent
 #tag EndEvents
