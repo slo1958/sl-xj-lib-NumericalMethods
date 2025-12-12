@@ -1,16 +1,16 @@
 #tag Class
 Class clSimplex
 	#tag Method, Flags = &h0
-		Sub AddConstraint(ConstraintID as string, paramarray term as pair)
+		Sub AddConstraint(ConstraintID as string, terms() as pair, rel as string, rhs as double)
 		  //
-		  // Constaint term
+		  // 
 		  //
-		  // for the equation:   constant:Xi, for example.  -x3 is written.  -1:"x2"
-		  // for the rhs: relation:constant , for example. <=0 is written "<=":0
+		  // for the equation, terms:  constant:Xi, for example.  -x3 is written.  -1:"x2"
+		  //
+		  // rel is any of "<=", ">=", "="
 		  //
 		  
 		  var vm() as double
-		  var vs as double
 		  var vrhs as double
 		  var vForm as ConstraintForm
 		  
@@ -18,7 +18,7 @@ Class clSimplex
 		  
 		  vm.ResizeTo(nbVariables-1)
 		  
-		  for each p as pair in term
+		  for each p as pair in terms
 		    var v1 as variant = p.left
 		    var v2 as variant = p.right
 		    
@@ -39,46 +39,45 @@ Class clSimplex
 		      end if
 		      
 		    else
-		      select case v1
-		      case "<"
-		        self.AddError(ConstraintID + " invalid relation "  + v1)
-		        hasError = true
-		        
-		      case "<="
-		        vs = 1
-		        vForm = ConstraintForm.isLowerOrEqual
-		        
-		      case ">"
-		        self.AddError(ConstraintID + " invalid relation "  + v1)
-		        hasError = true
-		        
-		      case ">="
-		        vs = -1
-		        vForm= ConstraintForm.isHigherOrEqual
-		        
-		      case "="
-		        vs = 0
-		        vForm = ConstraintForm.isEqual
-		        
-		      case else
-		        self.AddError(ConstraintID + " invalid relation "  + v1)
-		        hasError = true
-		        
-		      end select
-		      
-		      vrhs = v2.DoubleValue
-		      
-		      // handling rhs
+		      self.AddError(ConstraintID + "invalid value " + v1)
+		      hasError = true
 		      
 		    end if
 		    
 		  next
 		  
+		  select case rel
+		  case "<"
+		    self.AddError(ConstraintID + " invalid relation "  + rel)
+		    hasError = true
+		    
+		  case "<="
+		    vForm = ConstraintForm.isLowerOrEqual
+		    
+		  case ">"
+		    self.AddError(ConstraintID + " invalid relation "  + rel)
+		    hasError = true
+		    
+		  case ">="
+		    vForm= ConstraintForm.isHigherOrEqual
+		    
+		  case "="
+		    vForm = ConstraintForm.isEqual
+		    
+		  case else
+		    self.AddError(ConstraintID + " invalid relation "  + rel)
+		    hasError = true
+		    
+		  end select
+		  
+		  vrhs = rhs 
+		  
+		  
 		  if  hasError then
 		    self.AddError(ConstraintID + " ignoring constraint")
 		    
 		  else
-		    self.AddPreparedConstraint(vm, vs, vrhs, vForm)
+		    self.AddPreparedConstraint(vm, vrhs, vForm)
 		    
 		  end if
 		  
@@ -96,7 +95,7 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub AddPreparedConstraint(cterms() as double, cslack as double, crhs as double, form as ConstraintForm)
+		Private Sub AddPreparedConstraint(cterms() as double, crhs as double, form as ConstraintForm)
 		  
 		  // Update constraints matrix
 		  
@@ -125,52 +124,12 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub AddUpperBound(variable as string, bound as Double)
-		  // 
-		  // var hasError as Boolean = false
-		  // var vform as ConstraintForm
-		  // 
-		  // var vm() as double
-		  // vm.ResizeTo(nbVariables)
-		  // 
-		  // var v3 as integer = varToIndex(variable)
-		  // 
-		  // if v3 < 0 then
-		  // self.AddError("Upper bound for " + variable+ " invalid variable")
-		  // hasError = True
-		  // 
-		  // elseif 0 <= v3-1 and v3-1 <= vm.LastIndex then
-		  // vm(v3-1)  = 1
-		  // 
-		  // else
-		  // self.AddError("Upper bound for " + variable+ " invalid variable")
-		  // hasError = True
-		  // 
-		  // end if
-		  // 
-		  // if hasError then
-		  // self.AddError("Upper bound for " + variable+ " ignored")
-		  // 
-		  // else
-		  // vm(v3) = 1.0
-		  // 
-		  // AddPreparedConstraint(vm, 1.0, bound, ConstraintForm.isLowerOrEqual)
-		  // 
-		  // end if
-		  // 
-		  // Return
-		  // 
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub Constructor(nbrVariables as integer)
 		  self.nbVariables = nbrVariables
 		  
 		  self.runEndFlag = RunStatus.NotPrepared
 		  
-		  self.TraceRun = True
+		  self.TraceRun = False
 		  
 		End Sub
 	#tag EndMethod
@@ -215,6 +174,8 @@ Class clSimplex
 		Sub DumpMatrixToLog()
 		  
 		  
+		  System.DebugLog("-- INPUT MATRIX --")
+		  
 		  for row as integer = 1 to nbConstraints
 		    var s as  String
 		    
@@ -230,6 +191,7 @@ Class clSimplex
 		    
 		  next
 		  
+		  return
 		  
 		End Sub
 	#tag EndMethod
@@ -244,9 +206,9 @@ Class clSimplex
 		  // 
 		  var basisp(-1) as integer
 		  basisp = getBasisP
-		   
 		  
-		  System.DebugLog("Value objective function " + format(-vminmax * mat(trows2, tcols2), "-####0.000"))
+		  
+		  System.DebugLog("Value objective function " + format(-vminmax * mat(rowObjFctPhase2, tcols2), "-####0.000"))
 		  
 		  for col as integer  = 1 to nbVariables
 		    var s as string
@@ -261,7 +223,7 @@ Class clSimplex
 		      
 		    end if
 		    
-		    s = s + " red.costs"+ format(-vminmax*mat(trows2, col),"-###0.000")
+		    s = s + " red.costs"+ format(-vminmax*mat(rowObjFctPhase2, col),"-###0.000")
 		    
 		    System.DebugLog(s)
 		    
@@ -305,6 +267,8 @@ Class clSimplex
 		  
 		  basisp.ResizeTo(nbVariables + nbConstraints)
 		  
+		  
+		  
 		  for col as integer = 1 to nbVariables + nbConstraints 
 		    var row as integer
 		    var f as Boolean = false
@@ -333,10 +297,18 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function getErrors() As string()
+		  
+		  return self.Errors
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GetObjFunctionValue() As Double
 		  
 		  if self.runEndFlag = RunStatus.Done then
-		    return -minMaxFct() * mat(trows2, tcols2)
+		    return -minMaxFct() * mat(rowObjFctPhase2, tcols2)
 		    
 		  else
 		    return 0
@@ -395,7 +367,6 @@ Class clSimplex
 		    
 		  next
 		  
-		  System.DebugLog("FLG="+str(self.runEndFlag))
 		  if (q = cMax) then
 		    AddError("Error in Leave")
 		    self.runEndFlag = RunStatus.ErrorInLeave
@@ -418,7 +389,12 @@ Class clSimplex
 
 	#tag Method, Flags = &h21
 		Private Sub mat(row as integer, col as integer, assigns v as double)
+		  //
+		  // Use a method so that we can easily add  breakpoint to trace updates
+		  //
 		  mat_simplex(row,col) = v
+		  
+		  return
 		End Sub
 	#tag EndMethod
 
@@ -464,7 +440,7 @@ Class clSimplex
 		  
 		  value = mat(useRow, useColumn)
 		  
-		  for row as integer = 1 to trows2
+		  for row as integer = 1 to rowObjFctPhase2
 		    if (row <> useRow) then
 		      vl = mat(row, useColumn)
 		      
@@ -486,7 +462,7 @@ Class clSimplex
 		    
 		  next
 		  
-		  for row as integer = 1 to trows2
+		  for row as integer = 1 to rowObjFctPhase2
 		    mat(row, useColumn) = cZero
 		    
 		  next
@@ -506,12 +482,12 @@ Class clSimplex
 		  
 		  basis.ResizeTo(nbConstraints)
 		  
-		  trows1   = nbConstraints + 1
-		  trows2  = nbConstraints + 2
-		  
 		  var nbrRows as integer = nbConstraints
 		  
 		  var nbrColumns as integer = nbVariables + nbConstraints + mat_isHigherOrEqual.count(1) 
+		  
+		  rowObjFctPhase1   = nbrRows + 1
+		  rowObjFctPhase2  = nbrRows + 2
 		  
 		  tcols1 = nbVariables + nbConstraints +  mat_isHigherOrEqual.count(1) 
 		  tcols2 = nbrColumns + 1
@@ -522,7 +498,6 @@ Class clSimplex
 		  matResizeTo(nbrRows+2, nbrColumns+1)
 		  
 		  relMark.ResizeTo(nbrRows+2)
-		  
 		  
 		  RequiresPhase1 = false
 		  
@@ -565,6 +540,7 @@ Class clSimplex
 		    // Add rel mark
 		    relMark(rowIndex) = "="
 		    
+		    // We need phase 1 because we added artificial variables
 		    RequiresPhase1 = true
 		    
 		    rowIndex = rowIndex + 1
@@ -585,11 +561,12 @@ Class clSimplex
 		    // Add surplus variable
 		    tempcol = nbVariables - mat_isEqual.Count(1) + rowIndex
 		    mat(rowIndex, tempcol) = -1
-		    mat(trows1, tempcol) = 1
+		    mat(rowObjFctPhase1, tempcol) = 1
 		    
 		    // Add rel mark
 		    relMark(rowIndex) = ">="
 		    
+		    // We need phase 1 because we added artificial variables
 		    RequiresPhase1 = true
 		    
 		    rowIndex = rowIndex + 1
@@ -598,8 +575,8 @@ Class clSimplex
 		  
 		  // Move objective function
 		  for j as integer = 1 to nbVariables
-		    mat(0, j) = m_Objective(j-1) * vminmax
-		    mat(trows2,j )  = m_Objective(j-1) * vminmax
+		    mat(0, j) = mat_objFunction(j-1) * vminmax
+		    mat(rowObjFctPhase2,j )  = mat_objFunction(j-1) * vminmax
 		    
 		  next
 		  
@@ -610,7 +587,7 @@ Class clSimplex
 		    for row as integer = mat_isLowerOrEqual.Count(1)+1 to nbConstraints
 		      v = v - mat(row, col)
 		    next
-		    mat(trows1, col) = v
+		    mat(rowObjFctPhase1, col) = v
 		    
 		  next
 		  
@@ -623,13 +600,13 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SetObjectiveFunction(mode as optimise, paramarray term as pair)
+		Sub SetObjectiveFunction(mode as optimise, terms() as pair)
 		  
 		  var hasError as Boolean = false
 		  
-		  m_Objective.ResizeTo(self.nbVariables-1)
+		  mat_objFunction.ResizeTo(self.nbVariables-1)
 		  
-		  for each p as pair in term
+		  for each p as pair in terms
 		    var v1 as variant = p.left
 		    var v2 as variant = p.right
 		    
@@ -640,8 +617,8 @@ Class clSimplex
 		        self.AddError("Economic function, invalid variable " + v2)
 		        hasError = True
 		        
-		      elseif 0 <= v3-1 and v3-1 <= m_Objective.LastIndex then
-		        m_Objective(v3-1)  = v1
+		      elseif 0 <= v3-1 and v3-1 <= mat_objFunction.LastIndex then
+		        mat_objFunction(v3-1)  = v1
 		        
 		      else
 		        self.AddError("Economic function, invalid variable " + v2)
@@ -660,6 +637,26 @@ Class clSimplex
 		  self.runMode = mode
 		  
 		  return
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetObjectiveFunction(minMax as string, terms() as pair)
+		  
+		  select case minmax.Uppercase
+		  case "MAX"
+		    SetObjectiveFunction(clSimplex.Optimise.forMaximum, terms)
+		    
+		  case "MIN"
+		    SetObjectiveFunction(clSimplex.Optimise.forMinimum, terms)
+		    
+		  case else
+		    self.AddError("Invalid mode for SetObjectiveFunction, expected 'min' or 'max', found " + minMax)
+		    
+		  end select
+		  
+		  Return
+		  
 		End Sub
 	#tag EndMethod
 
@@ -684,17 +681,13 @@ Class clSimplex
 	#tag Method, Flags = &h0
 		Sub SolveProblem()
 		  
-		  // Phase 1 only if we have 
-		  
-		  
-		  
 		  if  self.runEndFlag <> RunStatus.InProgress then Return
 		  
 		  if RequiresPhase1 then
 		    var col as integer
 		    var f as Boolean
 		    
-		    SimplexPhase(trows1)
+		    SimplexPhase(rowObjFctPhase1)
 		    
 		    self.runEndFlag = RunStatus.ErrorPostProcPhase1
 		    
@@ -722,7 +715,7 @@ Class clSimplex
 		  end if
 		  
 		  self.runEndFlag = RunStatus.InProgress 
-		  SimplexPhase(trows2)
+		  SimplexPhase(rowObjFctPhase2)
 		  
 		  Return
 		  
@@ -786,31 +779,42 @@ Class clSimplex
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private eco() As Double
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
 		Private Errors() As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		#tag Note
+			Initial storage for constraint with '=' sign
+		#tag EndNote
 		Private mat_isEqual(-1,-1) As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		#tag Note
+			Initial storage for constraint with '>=' sign
+		#tag EndNote
 		Private mat_isHigherOrEqual(-1,-1) As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		#tag Note
+			Initial storage for constraint with '<=' sign
+		#tag EndNote
 		Private mat_isLowerOrEqual(-1,-1) As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mat_simplex(-1,-1) As double
+		#tag Note
+			Initial storage objective function 
+		#tag EndNote
+		Private mat_objFunction() As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private m_Objective() As double
+		#tag Note
+			main matrix used by Solver
+		#tag EndNote
+		Private mat_simplex(-1,-1) As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -818,6 +822,10 @@ Class clSimplex
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		#tag Note
+			stores '<=', '=' or '>=' for each constraint moved to the main simplex matrix
+			
+		#tag EndNote
 		Private relMark() As String
 	#tag EndProperty
 
@@ -826,15 +834,19 @@ Class clSimplex
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private rowObjFctPhase1 As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private rowObjFctPhase2 As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private runEndFlag As RunStatus
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private runMode As optimise
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private s(-1) As double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -857,14 +869,6 @@ Class clSimplex
 
 	#tag Property, Flags = &h21
 		Private TraceRun As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private trows1 As Integer
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private trows2 As Integer
 	#tag EndProperty
 
 
@@ -933,77 +937,6 @@ Class clSimplex
 			Visible=true
 			Group="Position"
 			InitialValue="0"
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="nbVariables"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="RequiresPhase1"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Boolean"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="runEndFlag"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="RunStatus"
-			EditorType="Enum"
-			#tag EnumValues
-				"0 - InProgress"
-				"1 - Done"
-				"2 - ErrorInLeave"
-				"3 - NotPrepared"
-				"4 - ErrorPostProcPhase1"
-			#tag EndEnumValues
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="tcols1"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="tcols2"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="tcols3"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="trows1"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
-			Type="Integer"
-			EditorType=""
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="trows2"
-			Visible=false
-			Group="Behavior"
-			InitialValue=""
 			Type="Integer"
 			EditorType=""
 		#tag EndViewProperty

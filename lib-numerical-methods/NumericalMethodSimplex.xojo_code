@@ -2,17 +2,27 @@
 Protected Module NumericalMethodSimplex
 	#tag Method, Flags = &h0
 		Sub test_simplex()
+		  //
+		  // Create a system with 4 variables
+		  //
 		  var cs as new clSimplex(4)
 		  
-		  cs.AddConstraint("C01", 1:"x1",2:"x3","<=":740)
-		  cs.AddConstraint("C02", 2:"x2", -7:"x4","<=":0)
-		  cs.AddConstraint("C03", 1:"x2", -1:"x3", 2:"x4", ">=":0.5)
-		  cs.AddConstraint("C04",1:"x1",1:"x2",1:"x3",1:"x4","=":9)
+		  //
+		  // Add constraints
+		  //
+		  cs.AddConstraint("C01", array(1:"x1",2:"x3"),"<=",740)
+		  cs.AddConstraint("C02", array(2:"x2", -7:"x4"),"<=",0)
+		  cs.AddConstraint("C03", array(1:"x2", -1:"x3", 2:"x4"), ">=",0.5)
+		  cs.AddConstraint("C04",array(1:"x1",1:"x2",1:"x3",1:"x4"),"=",9)
 		  
-		  
-		  cs.SetObjectiveFunction(clSimplex.Optimise.forMaximum, 1:"x1",1:"x2",3:"x3", -0.5:"x4")
+		  //
+		  // Define objective function
+		  //
+		  // cs.SetObjectiveFunction(clSimplex.Optimise.forMaximum, array(1:"x1",1:"x2",3:"x3", -0.5:"x4"))
+		  cs.SetObjectiveFunction("max", array(1:"x1",1:"x2",3:"x3", -0.5:"x4"))
 		  
 		  cs.prepareMatrix
+		  
 		  //cs.DumpFullMatrixToLog
 		  
 		  cs.SolveProblem
@@ -73,13 +83,8 @@ Protected Module NumericalMethodSimplex
 		
 		// This is based on 
 		// - the routine SMPLEX in Numerical Recipes in Pascal: The Art of Scientific Computing
-		// - on the document 'The Simplex Method' by Yinyu Ye, Department of Management Science and Engineering
-		Stanford University
-		
-		
-		
-		
-		Link: https://web.stanford.edu/class/msande310/lecture09.pdf
+		// - on the document 'The Simplex Method' by Yinyu Ye, Department of Management Science and Engineering, Stanford University
+		//
 		
 		
 	#tag EndNote
