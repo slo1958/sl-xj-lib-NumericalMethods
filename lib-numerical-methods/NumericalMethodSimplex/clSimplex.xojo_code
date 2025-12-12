@@ -425,7 +425,7 @@ Class clSimplex
 
 	#tag Method, Flags = &h0
 		Function nbConstraints() As integer
-		  return mat_isLowerOrEqual.Count(1) + mat_isHigherOrEqual.Count(1) + mat_isEqual.Count(1)
+		  return mat_isLowerOrEqual.rowCount + mat_isHigherOrEqual.rowCount + mat_isEqual.rowCount
 		  
 		End Function
 	#tag EndMethod
@@ -484,16 +484,15 @@ Class clSimplex
 		  
 		  var nbrRows as integer = nbConstraints
 		  
-		  var nbrColumns as integer = nbVariables + nbConstraints + mat_isHigherOrEqual.count(1) 
-		  
+		  var nbrColumns as integer = nbVariables + nbConstraints + mat_isHigherOrEqual.rowCount() 
 		  rowObjFctPhase1   = nbrRows + 1
 		  rowObjFctPhase2  = nbrRows + 2
 		  
-		  tcols1 = nbVariables + nbConstraints +  mat_isHigherOrEqual.count(1) 
+		  tcols1 = nbVariables + nbConstraints +  mat_isHigherOrEqual.rowCount  
 		  tcols2 = nbrColumns + 1
 		  
 		  // Start index of artifical variables
-		  tcols3 = nbVariables + mat_isLowerOrEqual.count(1) + mat_isHigherOrEqual.Count(1)
+		  tcols3 = nbVariables + mat_isLowerOrEqual.rowCount + mat_isHigherOrEqual.rowCount 
 		  
 		  matResizeTo(nbrRows+2, nbrColumns+1)
 		  
@@ -504,7 +503,7 @@ Class clSimplex
 		  var rowIndex as integer = 1
 		  
 		  // RHS is duplicated in columns 0 and tcols2
-		  for i as integer = 0 to mat_isLowerOrEqual.LastIndex(1)
+		  for i as integer = 0 to mat_isLowerOrEqual.lastRowIndex 
 		    for j as integer = 0 to nbVariables
 		      mat(rowIndex, j) = mat_isLowerOrEqual(i, j)
 		    next
@@ -525,7 +524,7 @@ Class clSimplex
 		    
 		  next
 		  
-		  for i as integer = 0 to mat_isEqual.LastIndex(1)
+		  for i as integer = 0 to mat_isEqual.lastRowIndex // (1)
 		    for j as integer = 0 to nbVariables
 		      mat(rowIndex, j) = mat_isEqual(i, j)
 		      
@@ -533,7 +532,7 @@ Class clSimplex
 		    mat(rowIndex, tcols2) = mat_isEqual(i, 0)
 		    
 		    // Add artificial variable in base
-		    var tempcol as integer = rowIndex + nbVariables + mat_isHigherOrEqual.Count(1)
+		    var tempcol as integer = rowIndex + nbVariables + mat_isHigherOrEqual.rowCount
 		    mat(rowIndex , tempcol) = 1
 		    basis(rowindex) = tempcol
 		    
@@ -547,19 +546,19 @@ Class clSimplex
 		    
 		  next
 		  
-		  for i as integer = 0 to mat_isHigherOrEqual.LastIndex(1)
+		  for i as integer = 0 to mat_isHigherOrEqual.lastRowIndex // (1)
 		    for j as integer = 0 to nbVariables
 		      mat(rowIndex, j) = mat_isHigherOrEqual(i, j)
 		    next 
 		    mat(rowIndex, tcols2) = mat_isHigherOrEqual(i, 0)
 		    
 		    // Add artificial variable in base
-		    var tempcol as integer = rowIndex + nbVariables + mat_isHigherOrEqual.Count(1)
+		    var tempcol as integer = rowIndex + nbVariables + mat_isHigherOrEqual.rowCount 
 		    mat(rowIndex , tempcol) = 1
 		    basis(rowindex) = tempcol
 		    
 		    // Add surplus variable
-		    tempcol = nbVariables - mat_isEqual.Count(1) + rowIndex
+		    tempcol = nbVariables - mat_isEqual.rowCount + rowIndex
 		    mat(rowIndex, tempcol) = -1
 		    mat(rowObjFctPhase1, tempcol) = 1
 		    
@@ -584,7 +583,7 @@ Class clSimplex
 		  // Calculate artificial variables
 		  for col as integer = 1 to nbVariables
 		    var v as Double=0
-		    for row as integer = mat_isLowerOrEqual.Count(1)+1 to nbConstraints
+		    for row as integer = mat_isLowerOrEqual.RowCount+1 to nbConstraints
 		      v = v - mat(row, col)
 		    next
 		    mat(rowObjFctPhase1, col) = v
@@ -737,7 +736,7 @@ Class clSimplex
 	#tag Method, Flags = &h21
 		Private Sub updateSelectedArray(m(, ) as Double, cterms() as double, rhs as double)
 		  // Add a new row
-		  var idx as integer = m.LastIndex(1)+1
+		  var idx as integer = m.lastRowIndex+1
 		  
 		  m.ResizeTo(idx, nbVariables) // This provides nbColumns + 1 columns
 		  
@@ -805,7 +804,7 @@ Class clSimplex
 
 	#tag Property, Flags = &h21
 		#tag Note
-			Initial storage objective function 
+			Initial storage objective function
 		#tag EndNote
 		Private mat_objFunction() As double
 	#tag EndProperty
@@ -824,7 +823,6 @@ Class clSimplex
 	#tag Property, Flags = &h21
 		#tag Note
 			stores '<=', '=' or '>=' for each constraint moved to the main simplex matrix
-			
 		#tag EndNote
 		Private relMark() As String
 	#tag EndProperty
