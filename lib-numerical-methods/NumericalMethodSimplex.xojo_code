@@ -7,10 +7,30 @@ Protected Module NumericalMethodSimplex
 		  cs.AddConstraint("C01", 1:"x1",2:"x3","<=":740)
 		  cs.AddConstraint("C02", 2:"x2", -7:"x4","<=":0)
 		  cs.AddConstraint("C03", 1:"x2", -1:"x3", 2:"x4", ">=":0.5)
-		  cs.AddConstraint("C04",1:"x1",1:"x2",1:"x3",1:"x4",":":9)
+		  cs.AddConstraint("C04",1:"x1",1:"x2",1:"x3",1:"x4","=":9)
 		  
+		  
+		  cs.SetObjectiveFunction(clSimplex.Optimise.forMaximum, 1:"x1",1:"x2",3:"x3", -0.5:"x4")
+		  
+		  cs.prepareMatrix
+		  //cs.DumpFullMatrixToLog
+		  
+		  cs.SolveProblem
+		  
+		  //cs.DumpSolutionToLog
+		  
+		  System.DebugLog("Obj:"+cs.GetObjFunctionValue.ToString)
+		  
+		  var v() as Double = cs.GetSolution
+		  var n as integer =1
+		  for each d as double in v
+		    System.DebugLog("x"+n.ToString + ":" + d.ToString)
+		    n=n+1
+		    
+		  next
 		  
 		  return
+		  
 		End Sub
 	#tag EndMethod
 
@@ -28,21 +48,21 @@ Protected Module NumericalMethodSimplex
 		
 		Here, x2, x3 and x4 are free variable
 		
-		Solution is to replace, for example x2 by (xp2 - xm2)
+		Solution is to replace, for example x2 by (xp2 - xmat_isHigherOrEqual)
 		
 		With
 		
 		   xp2 >=0
-		   xm2 >=0
+		   xmat_isHigherOrEqual >=0
 		
 		2.x1 + 3.x2 - 1.x3 + 1.x4 becomes
 		
-		2.x1 + 3.(xp2-xm2) - 1.(xp3-xm3)  + 1.(xp4 - xm4) 
+		2.x1 + 3.(xp2-xmat_isHigherOrEqual) - 1.(xp3-xmat_isEqual)  + 1.(xp4 - xm4) 
 		
 		
 		
 		
-		2x1 + 3xp2 - 3xm2 - xp3 + xm3 + xp4 - xm4
+		2x1 + 3xp2 - 3xmat_isHigherOrEqual - xp3 + xmat_isEqual + xp4 - xm4
 		
 		 
 		

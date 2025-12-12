@@ -20,7 +20,7 @@ Protected Module NumericalMethodMatrixLUDecomposition
 		  //
 		  
 		  
-		  if not MatisSquare(d) then Return -1
+		  if not matIsSquare(d) then Return -1
 		  if d.LastIndex(1) <> b.LastIndex then return -2
 		  if d.LastIndex(1) <> index.LastIndex then return -3
 		  
@@ -38,7 +38,7 @@ Protected Module NumericalMethodMatrixLUDecomposition
 		    bcopy(i) = b(i)
 		  next
 		  
-		   
+		  
 		  var sum as double
 		  
 		  for i as integer = 0 to n
@@ -91,7 +91,7 @@ Protected Module NumericalMethodMatrixLUDecomposition
 		  //
 		  var vv(-1) as Double
 		  
-		  if not MatisSquare(a) then return -1
+		  if not matIsSquare(a) then return -1
 		  
 		  var n as integer = a.LastIndex(1)
 		  var d as integer = 1
