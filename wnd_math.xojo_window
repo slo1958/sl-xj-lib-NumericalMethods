@@ -1,5 +1,5 @@
 #tag DesktopWindow
-Begin DesktopWindow wnd_math
+Begin DesktopWindow wnd_math Implements NumericalMethodSimplex.itfMessageWriter
    Backdrop        =   0
    BackgroundColor =   &cFFFFFF
    Composite       =   False
@@ -24,7 +24,7 @@ Begin DesktopWindow wnd_math
    Title           =   "Untitled"
    Type            =   0
    Visible         =   True
-   Width           =   600
+   Width           =   1026
    Begin DesktopButton Button5
       AllowAutoDeactivate=   True
       Bold            =   False
@@ -118,10 +118,74 @@ Begin DesktopWindow wnd_math
       Visible         =   True
       Width           =   80
    End
+   Begin DesktopListBox ListBox1
+      AllowAutoDeactivate=   True
+      AllowAutoHideScrollbars=   True
+      AllowExpandableRows=   False
+      AllowFocusRing  =   True
+      AllowResizableColumns=   False
+      AllowRowDragging=   False
+      AllowRowReordering=   False
+      Bold            =   False
+      ColumnCount     =   1
+      ColumnWidths    =   ""
+      DefaultRowHeight=   -1
+      DropIndicatorVisible=   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      GridLineStyle   =   0
+      HasBorder       =   True
+      HasHeader       =   True
+      HasHorizontalScrollbar=   False
+      HasVerticalScrollbar=   True
+      HeadingIndex    =   -1
+      Height          =   340
+      Index           =   -2147483648
+      InitialValue    =   ""
+      Italic          =   False
+      Left            =   243
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   True
+      RequiresSelection=   False
+      RowSelectionType=   0
+      Scope           =   0
+      TabIndex        =   3
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   40
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   732
+      _ScrollWidth    =   -1
+   End
 End
 #tag EndDesktopWindow
 
 #tag WindowCode
+	#tag Method, Flags = &h0
+		Sub Done()
+		  Listbox1.AddRow("---")
+		  
+		  return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub WriteMessage(msg as string)
+		  Listbox1.AddRow(msg)
+		  
+		End Sub
+	#tag EndMethod
+
+
 #tag EndWindowCode
 
 #tag Events Button5
@@ -150,7 +214,13 @@ End
 #tag Events Button6
 	#tag Event
 		Sub Pressed()
-		  test_simplex
+		  test_simplex1(self)
+		  test_simplex2(self)
+		  test_simplex3(self)
+		  
+		  test_simplex4(self)
+		  
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents

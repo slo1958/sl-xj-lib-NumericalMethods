@@ -1,13 +1,168 @@
 #tag Class
 Class clSimplex
 	#tag Method, Flags = &h0
+		Sub AddConstraint(ConstraintID as string, allTerms() as double)
+		  //
+		  // Add a constraint
+		  // 
+		  // Parameters
+		  // - ConstraintID: identifier of the constraint
+		  // - allTerms: coefficients of the constraint, all variables must be specified, relation  (-1 for <=, 0 for =, +1 for >=), rhs
+		  //
+		  // Returns
+		  // - nothing
+		  //
+		  
+		  var vm() as double
+		  var vrhs as double
+		  var vForm as ConstraintForm
+		  
+		  var hasError as Boolean = false
+		  
+		  vm.ResizeTo(nbVariables-1)
+		  
+		  
+		  if allTerms.Count <> nbVariables+2 then
+		    self.AddError(ConstraintID + " invalid size of source array")
+		    hasError = true
+		    
+		  end if
+		  
+		  for i as integer = 0 to vm.LastIndex
+		    vm(i) = allTerms(i)
+		    
+		  next
+		  
+		  vForm = getConstraintForm(allTerms(nbVariables))
+		  
+		  if vForm = ConstraintForm.undefined then
+		    self.AddError(ConstraintID + " invalid relation "  + allTerms(nbVariables).ToString)
+		    hasError = true
+		    
+		  end if
+		  
+		  vrhs = allTerms(nbVariables+1)
+		  
+		  if  hasError then
+		    self.AddError(ConstraintID + " ignoring constraint")
+		    
+		  else
+		    self.AddPreparedConstraint(vm, vrhs, vForm)
+		    
+		  end if
+		  
+		  Return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AddConstraint(ConstraintID as string, coeff() as double, rel as integer, rhs as double)
+		  //
+		  // Add a constraint
+		  // 
+		  // Parameters
+		  // - ConstraintID: identifier of the constraint
+		  // - Coeff: coefficients of the constraint, all variables must be specified
+		  // - rel: relation (-1 for <=, 0 for =, +1 for >=)
+		  // - rhs: right hand side
+		  //
+		  // Returns
+		  // - nothing
+		  //
+		  
+		  var hasError as Boolean = false
+		  var vForm as ConstraintForm
+		  
+		  if coeff.Count <> nbVariables then
+		    self.AddError(ConstraintID + " invalid size of coef array")
+		    hasError = true
+		    
+		  end if
+		  
+		  
+		  vForm = getConstraintForm(rel)
+		  
+		  if vForm = ConstraintForm.undefined then
+		    self.AddError(ConstraintID + " invalid relation "  + rel.ToString)
+		    hasError = true
+		    
+		  end if
+		  
+		  
+		  if  hasError then
+		    self.AddError(ConstraintID + " ignoring constraint")
+		    
+		  else
+		    self.AddPreparedConstraint(coeff, rhs, vForm)
+		    
+		  end if
+		  
+		  Return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub AddConstraint(ConstraintID as string, coeff() as double, rel as string, rhs as double)
+		  //
+		  // Add a constraint
+		  // 
+		  // Parameters
+		  // - ConstraintID: identifier of the constraint
+		  // - Coeff: coefficients of the constraint, all variables must be specified
+		  // - rel: relation (<=,  =,  >=)
+		  // - rhs: right hand side
+		  //
+		  // Returns
+		  // - nothing
+		  //
+		  
+		  var hasError as Boolean = false
+		  var vForm as ConstraintForm
+		  
+		  if coeff.Count <> nbVariables then
+		    self.AddError(ConstraintID + " invalid size of coef array")
+		    hasError = true
+		    
+		  end if
+		  
+		  
+		  vForm = getConstraintForm(rel)
+		  
+		  if vForm = ConstraintForm.undefined then
+		    self.AddError(ConstraintID + " invalid relation "  + rel)
+		    hasError = true
+		    
+		  end if
+		  
+		  
+		  if  hasError then
+		    self.AddError(ConstraintID + " ignoring constraint")
+		    
+		  else
+		    self.AddPreparedConstraint(coeff, rhs, vForm)
+		    
+		  end if
+		  
+		  Return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub AddConstraint(ConstraintID as string, terms() as pair, rel as string, rhs as double)
 		  //
+		  // Add a constraint
 		  // 
+		  // Parameters
+		  // - ConstraintID: identifier of the constraint
+		  // - Terms: definition of the constraint, array, only non zero needs to be specified constant:Xi, for example.  -x3 is written.  -1:"x2"
+		  // - rel: relation (<=,  =,  >=)
+		  // - rhs: right hand side
 		  //
-		  // for the equation, terms:  constant:Xi, for example.  -x3 is written.  -1:"x2"
-		  //
-		  // rel is any of "<=", ">=", "="
+		  // Returns
+		  // - nothing
 		  //
 		  
 		  var vm() as double
@@ -46,32 +201,15 @@ Class clSimplex
 		    
 		  next
 		  
-		  select case rel
-		  case "<"
+		  vForm = getConstraintForm(rel)
+		  
+		  if vForm = ConstraintForm.undefined then
 		    self.AddError(ConstraintID + " invalid relation "  + rel)
 		    hasError = true
 		    
-		  case "<="
-		    vForm = ConstraintForm.isLowerOrEqual
-		    
-		  case ">"
-		    self.AddError(ConstraintID + " invalid relation "  + rel)
-		    hasError = true
-		    
-		  case ">="
-		    vForm= ConstraintForm.isHigherOrEqual
-		    
-		  case "="
-		    vForm = ConstraintForm.isEqual
-		    
-		  case else
-		    self.AddError(ConstraintID + " invalid relation "  + rel)
-		    hasError = true
-		    
-		  end select
+		  end if
 		  
 		  vrhs = rhs 
-		  
 		  
 		  if  hasError then
 		    self.AddError(ConstraintID + " ignoring constraint")
@@ -82,6 +220,7 @@ Class clSimplex
 		  end if
 		  
 		  return
+		  
 		End Sub
 	#tag EndMethod
 
@@ -135,36 +274,34 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub DumpFullMatrixToLog()
-		  const bigStr as string = "                                                      "
-		  
+		Sub DumpFullMatrix(dumpToClipboard as Boolean, dumpToLog as Boolean)
+		   
 		  var s as string
+		  var sep as string = chr(9)
 		  
-		  
-		  System.DebugLog("--FULL MATRIX --")
-		  
-		  s = right(bigStr, 10)
-		  
-		  for col as integer = 0 to mat_simplex.LastIndex(2)
-		    s = s + right(bigStr + col.ToString, 10)
-		    
-		  next
-		  System.DebugLog(s)
+		  s = "Full Matrix" + EndOfLine
 		  
 		  for row as integer = 0 to mat_simplex.LastIndex(1)
+		    var r as string
 		    
-		    s = right(bigStr + row.tostring ,  10)
 		    for col as integer = 0 to mat_simplex.LastIndex(2)
-		      s = s + right(bigStr + format(mat_simplex(row,col),"###0.00"), 10)
+		      r = r + sep + format(mat_simplex(row,col),"###0.00")
 		      
 		    next
 		    
-		    System.DebugLog(s)
+		    s = s + r + EndOfLine
+		    
+		    if dumpToLog then System.DebugLog(r.ReplaceAll(chr(9), "     "))
 		    
 		  next
 		  
-		  System.DebugLog("---")
-		  
+		  if dumpToClipboard then
+		    var cl as new Clipboard
+		    cl.text = s
+		    
+		  end if
+		   
+		  return
 		  
 		  
 		End Sub
@@ -293,6 +430,52 @@ Class clSimplex
 		  
 		  Return basisp
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function getConstraintForm(rel as integer) As ConstraintForm
+		  
+		  var vForm as ConstraintForm = ConstraintForm.undefined
+		  
+		  
+		  select case rel
+		    
+		  case -1
+		    vForm = ConstraintForm.isLowerOrEqual
+		    
+		  case 1
+		    vForm= ConstraintForm.isHigherOrEqual
+		    
+		  case 0
+		    vForm = ConstraintForm.isEqual
+		    
+		  end select
+		  
+		  Return vForm
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function getConstraintForm(rel as string) As ConstraintForm
+		  
+		  var vForm as ConstraintForm = ConstraintForm.undefined
+		  
+		  
+		  select case rel
+		    
+		  case "<="
+		    vForm = ConstraintForm.isLowerOrEqual
+		    
+		  case ">="
+		    vForm= ConstraintForm.isHigherOrEqual
+		    
+		  case "="
+		    vForm = ConstraintForm.isEqual
+		    
+		  end select
+		  
+		  Return vForm
 		End Function
 	#tag EndMethod
 
@@ -436,9 +619,10 @@ Class clSimplex
 		  var val as double
 		  var vl as Double
 		  
-		  if TraceRun then System.DebugLog("Pivot " + useRow.ToString + " " + useColumn.ToString)
 		  
 		  value = mat(useRow, useColumn)
+		  
+		  if TraceRun then System.DebugLog("Pivot " + useRow.ToString + " " + useColumn.ToString+":" + value.ToString)
 		  
 		  for row as integer = 1 to rowObjFctPhase2
 		    if (row <> useRow) then
@@ -448,7 +632,7 @@ Class clSimplex
 		        if (col <> useColumn) then
 		          val = mat(row, col) - vl * mat(useRow, col) / value
 		          if (abs(val) < czero) then
-		            val = cZero
+		            val = 0
 		          end if
 		          mat(row, col) = val
 		          
@@ -463,11 +647,12 @@ Class clSimplex
 		  next
 		  
 		  for row as integer = 1 to rowObjFctPhase2
-		    mat(row, useColumn) = cZero
+		    mat(row, useColumn) = 0
 		    
 		  next
 		  
 		  mat(useRow, useColumn) = 1.0
+		  
 		  basis(useRow) = useColumn
 		  
 		  return
@@ -496,7 +681,7 @@ Class clSimplex
 		  
 		  matResizeTo(nbrRows+2, nbrColumns+1)
 		  
-		  relMark.ResizeTo(nbrRows+2)
+		  relMark.ResizeTo(nbrRows)
 		  
 		  RequiresPhase1 = false
 		  
@@ -599,6 +784,50 @@ Class clSimplex
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SetObjectiveFunction(minmax as integer, terms() as double)
+		  
+		  select case minmax
+		  case 1
+		    SetObjectiveFunction(clSimplex.Optimise.forMaximum, terms)
+		    
+		  case -1
+		    SetObjectiveFunction(clSimplex.Optimise.forMinimum, terms)
+		    
+		  case else
+		    self.AddError("Invalid mode for SetObjectiveFunction, expected '-1' or '+1', found " + minMax.ToString)
+		    
+		  end select
+		  
+		  Return 
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetObjectiveFunction(mode as optimise, terms() as double)
+		  
+		  var hasError as Boolean = false
+		  
+		  mat_objFunction.ResizeTo(self.nbVariables-1)
+		  
+		  if terms.Count <> nbVariables then 
+		    self.AddError("Economic function, invalid array size variable.")
+		    return
+		    
+		  end if
+		  
+		  for i as integer = 0 to terms.LastIndex
+		    mat_objFunction(i)  = terms(i)
+		    
+		  next
+		  
+		  self.runMode = mode
+		  
+		  return
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SetObjectiveFunction(mode as optimise, terms() as pair)
 		  
 		  var hasError as Boolean = false
@@ -683,10 +912,10 @@ Class clSimplex
 		  if  self.runEndFlag <> RunStatus.InProgress then Return
 		  
 		  if RequiresPhase1 then
-		    var col as integer
-		    var f as Boolean
 		    
 		    SimplexPhase(rowObjFctPhase1)
+		    
+		    if self.runEndFlag <> RunStatus.Done then Return 
 		    
 		    self.runEndFlag = RunStatus.ErrorPostProcPhase1
 		    
@@ -696,39 +925,33 @@ Class clSimplex
 		        
 		        if mat(row, tcols2) > cZero  then Return
 		        
-		        f = true
-		        col = 1
-		        while f and col <= tcols3
-		          if abs(mat(row,col)) > cZero then
+		        var f as Boolean = false
+		        
+		        var col as integer = 1
+		        
+		        do 
+		           
+		          if abs(mat(row,col)) >= cZero then
 		            pivot(row, col)
-		            f = false
+		            f = true
+		            
 		          end if
 		          
 		          col = col + 1
 		          
-		        Wend
+		          
+		        loop until (f or col > tcols3)
 		        
 		      end if
 		    next
 		    
 		  end if
 		  
+		  
 		  self.runEndFlag = RunStatus.InProgress 
 		  SimplexPhase(rowObjFctPhase2)
 		  
 		  Return
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub Untitled()
-		  
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub Untitled1()
 		  
 		End Sub
 	#tag EndMethod
@@ -865,22 +1088,23 @@ Class clSimplex
 		Private tcols3 As Integer
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private TraceRun As Boolean
+	#tag Property, Flags = &h0
+		TraceRun As Boolean
 	#tag EndProperty
 
 
-	#tag Constant, Name = cMax, Type = Double, Dynamic = False, Default = \"10.0e+35", Scope = Public
+	#tag Constant, Name = cMax, Type = Double, Dynamic = False, Default = \"1.0e+35", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = cZero, Type = Double, Dynamic = False, Default = \"0.0000001", Scope = Public
+	#tag Constant, Name = cZero, Type = Double, Dynamic = False, Default = \"0.00000001", Scope = Public
 	#tag EndConstant
 
 
 	#tag Enum, Name = ConstraintForm, Type = Integer, Flags = &h0
 		isLowerOrEqual
 		  isHigherOrEqual
-		isEqual
+		  isEqual
+		undefined
 	#tag EndEnum
 
 	#tag Enum, Name = Optimise, Type = Integer, Flags = &h0

@@ -17,6 +17,7 @@ Module=NumericalMethodsMatrixGeometry;lib-numerical-methods/NumericalMethodsMatr
 Module=NumericalMethodMatrixLUDecomposition;lib-numerical-methods/NumericalMethodMatrixLUDecomposition.xojo_code;&h0000000079219FFF;&h000000007619CFFF;false
 Module=NumericalMethodMatrixHelpers;lib-numerical-methods/NumericalMethodMatrixHelpers.xojo_code;&h00000000009747FF;&h000000007619CFFF;false
 Class=clSimplex;lib-numerical-methods/NumericalMethodSimplex/clSimplex.xojo_code;&h000000005848CFFF;&h000000002137B7FF;false
+Interface=itfMessageWriter;lib-numerical-methods/NumericalMethodSimplex/itfMessageWriter.xojo_code;&h0000000051D6E7FF;&h000000002137B7FF;false
 DefaultWindow=wnd_math
 AppMenuBar=MainMenuBar
 MajorVersion=1
